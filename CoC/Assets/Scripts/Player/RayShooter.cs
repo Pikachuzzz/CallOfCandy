@@ -11,6 +11,7 @@ public class RayShooter : MonoBehaviour
     [SerializeField] Image[] _images = new Image[3];
     [SerializeField] Image[] _imagesLife = new Image[5];
     [SerializeField] GameObject _gun;
+    [SerializeField] ChangeGun _changeGun;
     [SerializeField] TextMeshProUGUI textScore;
     private int MAXLIFE = 5;
     private int _score = 0;
@@ -46,7 +47,8 @@ public class RayShooter : MonoBehaviour
                     _score += target.ReactToHit(color);
                     textScore.text = "Score : " + _score;
                 } else {
-                StartCoroutine(SphereIndicator(hit.point));
+                    Color color = FindColor();
+                    StartCoroutine(SphereIndicator(hit.point, color));
 
                 }
             }
@@ -109,14 +111,21 @@ public class RayShooter : MonoBehaviour
         if(color.g == 1) g = 1;
         if(color.b == 1) b = 1;
         Debug.Log(new Color(r,g,b,1.0f));
+        /*
         _images[IFindColor()].color = new Color(r, g, b, 1.0f);
-        _gun.GetComponent<Renderer>().material.color = new Color(r, g, b, 1.0f);
+        _gun.GetComponent<Renderer>().material.color = new Color(r, g, b, 1.0f);*/
+        _changeGun.SetColorGun(new Color(r, g, b, 1.0f));
+        _changeGun.MoveGun();
+
     }
 
-    private IEnumerator SphereIndicator(Vector3 pos){
+
+    private IEnumerator SphereIndicator(Vector3 pos, Color color){
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.transform.position = pos;
-
+        sphere.transform.localScale -= new Vector3(0.5f, 0.5f, 0.5f);
+        Renderer rend = sphere.GetComponent<Renderer>();
+        rend.material.color = color;
         yield return new WaitForSeconds(1);
 
         Destroy(sphere);
